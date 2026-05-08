@@ -1,0 +1,201 @@
+{
+  "transactions": [
+    {
+      "id": 1777779057931,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Point",
+      "amount": 27500,
+      "date": "2026-05-02",
+      "fundSource": "Suami Risma"
+    },
+    {
+      "id": 1777779032353,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Indomaret",
+      "amount": 36600,
+      "date": "2026-05-01",
+      "fundSource": "Suami Risma"
+    },
+    {
+      "id": 1777778996049,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Retro",
+      "amount": 65000,
+      "date": "2026-05-03",
+      "fundSource": "Istri Tercantik"
+    },
+    {
+      "id": 1777778981017,
+      "type": "expense",
+      "category": "Belanja",
+      "note": "Kaos Kaki",
+      "amount": 25000,
+      "date": "2026-05-03",
+      "fundSource": "Istri Tercantik"
+    },
+    {
+      "id": 1777778943673,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Siomay & Batagor",
+      "amount": 15000,
+      "date": "2026-05-02",
+      "fundSource": "Istri Tercantik"
+    },
+    {
+      "id": 1777778892521,
+      "type": "expense",
+      "category": "Hiburan",
+      "note": "Tuker Uang",
+      "amount": 27000,
+      "date": "2026-05-02",
+      "fundSource": "Suami Risma"
+    },
+    {
+      "id": 1777778870058,
+      "type": "expense",
+      "category": "Hiburan",
+      "note": "Curug",
+      "amount": 34000,
+      "date": "2026-05-02",
+      "fundSource": "Istri Tercantik"
+    },
+    {
+      "id": 1777778849617,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "The Daun",
+      "amount": 80000,
+      "date": "2026-05-01",
+      "fundSource": "Istri Tercantik"
+    },
+    {
+      "id": 1777778821707,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Nasi Goreng",
+      "amount": 27000,
+      "date": "2026-05-01",
+      "fundSource": "Suami Risma"
+    },
+    {
+      "id": 1777778807786,
+      "type": "expense",
+      "category": "Hiburan",
+      "note": "Penginapan",
+      "amount": 470000,
+      "date": "2026-05-01",
+      "fundSource": "Istri Tercantik"
+    },
+    {
+      "id": 1777778780546,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Kopi Point",
+      "amount": 30000,
+      "date": "2026-05-01",
+      "fundSource": "Istri Tercantik"
+    },
+    {
+      "id": 1777603936263,
+      "type": "expense",
+      "category": "Rumah",
+      "note": "Laundry Baju",
+      "amount": 23000,
+      "date": "2026-05-01",
+      "fundSource": "Istri Tercantik"
+    },
+    {
+      "id": 1777603900815,
+      "type": "income",
+      "category": "Investasi",
+      "note": "Saham",
+      "amount": 328000,
+      "date": "2026-04-30",
+      "fundSource": null
+    },
+    {
+      "id": 1777210883221,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Gacoan",
+      "amount": 75500,
+      "date": "2026-04-26",
+      "fundSource": "Istri Tercantik"
+    },
+    {
+      "id": 1777175588444,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Es Kelapa",
+      "amount": 25000,
+      "date": "2026-04-25",
+      "fundSource": "Suami Risma"
+    },
+    {
+      "id": 1777175555828,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Jajan PM",
+      "amount": 11000,
+      "date": "2026-04-25",
+      "fundSource": "Suami Risma"
+    },
+    {
+      "id": 1777175523247,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Hokben",
+      "amount": 72500,
+      "date": "2026-04-25",
+      "fundSource": "Suami Risma"
+    },
+    {
+      "id": 1777175372011,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Sarapan",
+      "amount": 15000,
+      "date": "2026-04-25",
+      "fundSource": "Suami Risma"
+    },
+    {
+      "id": 1777175290334,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Jajan",
+      "amount": 11000,
+      "date": "2026-04-24",
+      "fundSource": "Istri Tercantik"
+    },
+    {
+      "id": 1777175272608,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Sate",
+      "amount": 20000,
+      "date": "2026-04-24",
+      "fundSource": "Istri Tercantik"
+    },
+    {
+      "id": 1777175225407,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Last Nongkrong YMMI",
+      "amount": 22000,
+      "date": "2026-04-24",
+      "fundSource": "Istri Tercantik"
+    },
+    {
+      "id": 1777175174277,
+      "type": "income",
+      "category": "Investasi",
+      "note": "Saham",
+      "amount": 250000,
+      "date": "2026-04-24"
+    }
+  ]
+}
