@@ -1,1036 +1,237 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🌸 Dompet Sayang - GitHub Sync</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --pink: #FFB3C6; --pink-light: #FFD6E0; --pink-dark: #FF85A1; --pink-deep: #e8547a;
-    --purple: #C9B1FF; --purple-light: #E8DFFF; --purple-dark: #9B7FD4;
-    --mint: #B5EAD7; --mint-light: #D4F5EA; --mint-dark: #6FD4AB;
-    --yellow: #FFEAA7; --yellow-dark: #FDCB6E; --peach: #FFCCB3; --peach-dark: #FFAA80;
-    --white: #FFFAFA; --text-dark: #5A3F5A; --text-mid: #8B6F8B; --text-light: #BBA5BB;
-    --bg: #FFF5F8; --card-bg: #FFFFFF;
-    --shadow: 0 8px 32px rgba(200,100,150,0.12); --shadow-hover: 0 16px 48px rgba(200,100,150,0.2);
-    --radius: 24px; --radius-sm: 14px;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text-dark); min-height:100vh;
-    background-image: radial-gradient(circle at 10% 20%, rgba(255,179,198,0.3) 0%, transparent 50%),
-      radial-gradient(circle at 90% 80%, rgba(201,177,255,0.25) 0%, transparent 50%),
-      radial-gradient(circle at 50% 50%, rgba(181,234,215,0.2) 0%, transparent 60%);
-  }
-  .deco { position:fixed; pointer-events:none; z-index:0; font-size:28px; opacity:0.12; animation:floaty 6s ease-in-out infinite; }
-  .deco:nth-child(1){top:5%;left:3%;animation-delay:0s} .deco:nth-child(2){top:15%;right:5%;animation-delay:1s}
-  .deco:nth-child(3){top:50%;left:1%;animation-delay:2s} .deco:nth-child(4){bottom:20%;right:3%;animation-delay:3s}
-  .deco:nth-child(5){bottom:5%;left:8%;animation-delay:4s}
-  @keyframes floaty { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-15px) rotate(10deg)} }
-  .wrapper { position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:24px 20px; }
-
-  /* ====== GITHUB SETUP MODAL ====== */
-  .modal-overlay {
-    position: fixed; inset: 0; z-index: 9999;
-    background: rgba(90,63,90,0.55); backdrop-filter: blur(8px);
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
-    animation: fadeInOverlay 0.3s ease;
-  }
-  .modal-overlay.hidden { display: none; }
-  @keyframes fadeInOverlay { from{opacity:0} to{opacity:1} }
-  .modal-box {
-    background: var(--card-bg);
-    border-radius: 28px;
-    padding: 36px 32px;
-    max-width: 500px; width: 100%;
-    box-shadow: 0 24px 80px rgba(200,100,150,0.25);
-    animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
-    position: relative;
-    overflow: hidden;
-  }
-  .modal-box::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 5px;
-    background: linear-gradient(90deg, #FF85A1, #C9B1FF, #6FD4AB);
-  }
-  @keyframes popIn { from{opacity:0;transform:scale(0.88) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
-  .modal-header { text-align: center; margin-bottom: 28px; }
-  .modal-header .modal-icon { font-size: 3rem; display: block; margin-bottom: 10px; }
-  .modal-header h2 { font-family: 'Pacifico', cursive; color: var(--pink-deep); font-size: 1.6rem; margin-bottom: 6px; }
-  .modal-header p { color: var(--text-mid); font-size: 0.88rem; font-weight: 600; line-height: 1.5; }
-  .modal-form-group { margin-bottom: 18px; }
-  .modal-label {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 0.8rem; font-weight: 800; color: var(--text-mid);
-    margin-bottom: 7px;
-  }
-  .modal-input {
-    width: 100%; padding: 13px 16px;
-    border: 2px solid #F0E0F0; border-radius: 14px;
-    font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 600;
-    color: var(--text-dark); background: var(--bg); outline: none;
-    transition: border-color 0.3s, box-shadow 0.3s;
-  }
-  .modal-input:focus { border-color: var(--pink-dark); box-shadow: 0 0 0 4px rgba(255,133,161,0.15); }
-  .modal-input-hint { font-size: 0.72rem; color: var(--text-light); font-weight: 600; margin-top: 5px; line-height: 1.4; }
-  .modal-input-hint a { color: var(--pink-deep); text-decoration: none; }
-  .modal-input-hint a:hover { text-decoration: underline; }
-  .modal-token-wrap { position: relative; }
-  .modal-token-wrap .modal-input { padding-right: 46px; }
-  .btn-eye {
-    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-    background: none; border: none; font-size: 1rem; cursor: pointer; opacity: 0.5;
-    transition: opacity 0.2s;
-  }
-  .btn-eye:hover { opacity: 1; }
-  .modal-divider { border: none; border-top: 1px dashed #F0E0F0; margin: 20px 0; }
-  .modal-file-path-row {
-    display: flex; gap: 8px;
-  }
-  .modal-file-path-row .modal-input { flex: 1; }
-  .btn-modal-connect {
-    width: 100%; padding: 15px;
-    background: linear-gradient(135deg, var(--pink-dark), var(--purple-dark));
-    border: none; border-radius: 16px;
-    font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 900;
-    color: #fff; cursor: pointer;
-    transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
-    margin-top: 8px;
-    box-shadow: 0 6px 24px rgba(200,100,150,0.25);
-  }
-  .btn-modal-connect:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(200,100,150,0.35); }
-  .btn-modal-connect:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
-  .modal-error {
-    background: #FFE4EC; border: 1.5px solid #FFB3C6;
-    border-radius: 12px; padding: 12px 15px;
-    font-size: 0.82rem; font-weight: 700; color: #e8547a;
-    margin-top: 14px; display: none;
-  }
-  .modal-error.show { display: block; }
-  .modal-success {
-    background: #D4F5EA; border: 1.5px solid #6FD4AB;
-    border-radius: 12px; padding: 12px 15px;
-    font-size: 0.82rem; font-weight: 700; color: #2d6a4f;
-    margin-top: 14px; display: none;
-  }
-  .modal-success.show { display: block; }
-
-  /* Loader spinner inside button */
-  .spin { display: inline-block; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ====== GITHUB BANNER ====== */
-  .github-banner {
-    display:flex; align-items:center; gap:14px;
-    padding:14px 20px; border-radius:var(--radius); margin-bottom:20px;
-    box-shadow:var(--shadow); font-size:0.88rem; font-weight:700;
-    transition: all 0.4s;
-  }
-  .github-banner.connecting { background:linear-gradient(135deg,#FFF3CD,#FFE8A3); color:#856404; }
-  .github-banner.connected  { background:linear-gradient(135deg,#D4F5EA,#B5EAD7); color:#2d6a4f; }
-  .github-banner.error      { background:linear-gradient(135deg,#FFD6E0,#FFB3C6); color:#9b2335; }
-  .github-banner .banner-icon { font-size:1.5rem; flex-shrink:0; }
-  .github-banner .banner-text { flex:1; }
-  .github-banner .banner-text small { display:block; font-weight:600; opacity:0.75; margin-top:2px; font-size:0.78rem; }
-  .btn-banner {
-    padding:9px 18px; border:none; border-radius:12px;
-    font-family:'Nunito',sans-serif; font-size:0.82rem; font-weight:800;
-    cursor:pointer; transition:all 0.3s; white-space:nowrap; flex-shrink:0;
-  }
-  .btn-banner.settings { background:#e8547a; color:#fff; }
-  .btn-banner.settings:hover { background:#c73e62; }
-  .btn-banner.sync { background:rgba(255,255,255,0.7); color:#2d6a4f; border:1.5px solid #6FD4AB; }
-  .btn-banner.sync:hover { background:#fff; }
-
-  /* HEADER */
-  .header {
-    text-align:center; margin-bottom:20px; padding:28px 24px;
-    background:linear-gradient(135deg,#FFD6E0 0%,#E8DFFF 50%,#D4F5EA 100%);
-    border-radius:var(--radius); box-shadow:var(--shadow); position:relative; overflow:hidden;
-  }
-  .header::before { content:''; position:absolute; inset:0;
-    background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,0.15) 20px,rgba(255,255,255,0.15) 40px); }
-  .header h1 { font-family:'Pacifico',cursive; font-size:2.6rem; color:var(--pink-deep); position:relative; text-shadow:3px 3px 0 rgba(255,179,198,0.5); }
-  .header p { color:var(--purple-dark); font-size:0.95rem; font-weight:600; margin-top:6px; position:relative; }
-  .save-indicator {
-    position:absolute; top:14px; right:18px;
-    font-size:0.78rem; font-weight:800; padding:5px 12px;
-    border-radius:20px; display:flex; align-items:center; gap:5px;
-    transition:all 0.4s;
-  }
-  .save-indicator.saving { background:#FFEAA7; color:#856404; animation: pulse 1s ease-in-out infinite; }
-  .save-indicator.saved  { background:#D4F5EA; color:#2d6a4f; }
-  .save-indicator.nosave { background:#FFD6E0; color:#9b2335; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
-
-  /* NAV TABS */
-  .nav-tabs { display:flex; gap:12px; margin-bottom:28px; background:var(--card-bg); padding:8px; border-radius:var(--radius); box-shadow:var(--shadow); }
-  .tab-btn { flex:1; padding:12px 8px; border:none; border-radius:var(--radius-sm); font-family:'Nunito',sans-serif; font-size:0.9rem; font-weight:700; cursor:pointer; transition:all 0.3s; display:flex; align-items:center; justify-content:center; gap:6px; background:transparent; color:var(--text-mid); }
-  .tab-btn.active { color:#fff; box-shadow:0 4px 16px rgba(0,0,0,0.15); }
-  .tab-btn.active.tab-dashboard { background:linear-gradient(135deg,var(--pink-dark),var(--purple-dark)); }
-  .tab-btn.active.tab-input { background:linear-gradient(135deg,var(--mint-dark),#6FC9A8); }
-  .tab-btn.active.tab-history { background:linear-gradient(135deg,var(--yellow-dark),var(--peach-dark)); }
-  .tab-btn:not(.active):hover { background:var(--pink-light); }
-
-  /* SECTIONS */
-  .section { display:none; animation:fadeIn 0.4s ease; }
-  .section.active { display:block; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-
-  /* SUMMARY */
-  .summary-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:28px; }
-  .sum-card { background:var(--card-bg); border-radius:var(--radius); padding:24px 20px; box-shadow:var(--shadow); text-align:center; position:relative; overflow:hidden; transition:transform 0.3s,box-shadow 0.3s; }
-  .sum-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-hover); }
-  .sum-card::before { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; border-radius:50%; opacity:0.2; }
-  .sum-card.income::before{background:var(--mint-dark)} .sum-card.expense::before{background:var(--pink-dark)} .sum-card.balance::before{background:var(--purple-dark)}
-  .sum-icon { font-size:2rem; margin-bottom:8px; }
-  .sum-label { font-size:0.78rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-light); margin-bottom:6px; }
-  .sum-amount { font-size:1.4rem; font-weight:900; }
-  .sum-card.income .sum-amount{color:var(--mint-dark)} .sum-card.expense .sum-amount{color:var(--pink-deep)} .sum-card.balance .sum-amount{color:var(--purple-dark)}
-
-  /* CHARTS */
-  .charts-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:28px; }
-  .chart-card { background:var(--card-bg); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); }
-  .chart-title { font-size:0.95rem; font-weight:800; color:var(--text-dark); margin-bottom:20px; display:flex; align-items:center; gap:8px; }
-  .donut-wrap { display:flex; align-items:center; gap:20px; }
-  .legend { display:flex; flex-direction:column; gap:10px; flex:1; }
-  .legend-item { display:flex; align-items:center; gap:8px; font-size:0.8rem; font-weight:600; color:var(--text-mid); }
-  .legend-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
-  .legend-pct { margin-left:auto; font-weight:800; color:var(--text-dark); }
-  .bar-chart { display:flex; flex-direction:column; gap:10px; }
-  .bar-row { display:flex; align-items:center; gap:10px; }
-  .bar-label { font-size:0.78rem; font-weight:700; color:var(--text-mid); width:80px; flex-shrink:0; }
-  .bar-track { flex:1; height:14px; background:#F5EEF5; border-radius:20px; overflow:hidden; }
-  .bar-fill { height:100%; border-radius:20px; transition:width 0.8s ease; }
-  .bar-val { font-size:0.75rem; font-weight:800; color:var(--text-dark); width:70px; text-align:right; flex-shrink:0; }
-
-  /* RECENT */
-  .recent-card { background:var(--card-bg); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); }
-  .recent-item { display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px dashed #F0E0F0; animation:slideIn 0.3s ease; }
-  .recent-item:last-child { border-bottom:none; }
-  @keyframes slideIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
-  .ri-icon { width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
-  .ri-icon.income-icon{background:var(--mint-light)} .ri-icon.expense-icon{background:var(--pink-light)}
-  .ri-info { flex:1; }
-  .ri-name { font-size:0.9rem; font-weight:700; color:var(--text-dark); }
-  .ri-sub { font-size:0.75rem; font-weight:600; color:var(--text-light); margin-top:2px; }
-  .ri-amount { font-size:0.95rem; font-weight:900; }
-  .ri-amount.income-amt{color:var(--mint-dark)} .ri-amount.expense-amt{color:var(--pink-deep)}
-  .ri-source-badge { font-size:0.7rem; background:#f0e0f0; display:inline-block; padding:2px 8px; border-radius:20px; margin-top:4px; font-weight:700; color:#8B6F8B; width:fit-content; }
-
-  /* FUND SOURCE */
-  .fund-source-section { background:var(--card-bg); border-radius:var(--radius); padding:28px; box-shadow:var(--shadow); margin-bottom:28px; position:relative; overflow:hidden; }
-  .fund-source-section::after { content:'💰'; position:absolute; right:20px; top:20px; font-size:48px; opacity:0.06; pointer-events:none; }
-  .fs-summary-cards { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:24px; }
-  .fs-sum-card { border-radius:18px; padding:20px 18px; text-align:center; position:relative; overflow:hidden; transition:transform 0.3s,box-shadow 0.3s; }
-  .fs-sum-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-hover); }
-  .fs-sum-card.wife { background:linear-gradient(135deg,#FFF0F4,#FFE0E9); border:1.5px solid #FFB3C6; }
-  .fs-sum-card.husb { background:linear-gradient(135deg,#F2EEFF,#E8DFFF); border:1.5px solid #C9B1FF; }
-  .fs-sum-card .card-crown { font-size:1.6rem; margin-bottom:6px; }
-  .fs-sum-card .card-name { font-size:0.72rem; font-weight:800; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; }
-  .fs-sum-card.wife .card-name{color:#e8547a} .fs-sum-card.husb .card-name{color:#9B7FD4}
-  .fs-sum-card .card-total { font-size:1.25rem; font-weight:900; margin-bottom:4px; }
-  .fs-sum-card.wife .card-total{color:#e8547a} .fs-sum-card.husb .card-total{color:#9B7FD4}
-  .fs-sum-card .card-pct { font-size:0.8rem; font-weight:700; padding:3px 10px; border-radius:20px; display:inline-block; }
-  .fs-sum-card.wife .card-pct{background:#FFD6E0;color:#e8547a} .fs-sum-card.husb .card-pct{background:#E8DFFF;color:#9B7FD4}
-  .fs-sum-card .card-txcount { font-size:0.72rem; font-weight:600; color:#BBA5BB; margin-top:5px; }
-  .fs-compare-wrap { margin-bottom:24px; background:#FFF8FB; border-radius:16px; padding:18px 20px; border:1.5px solid #F0E0F0; }
-  .fs-compare-label { display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700; margin-bottom:10px; }
-  .fs-compare-label .wife-lbl{color:#e8547a} .fs-compare-label .husb-lbl{color:#9B7FD4}
-  .fs-compare-track { height:22px; background:#F5EEF5; border-radius:20px; overflow:hidden; display:flex; position:relative; }
-  .fs-compare-wife { background:linear-gradient(90deg,#FF85A1,#e8547a); height:100%; border-radius:20px 0 0 20px; transition:width 1s cubic-bezier(.4,0,.2,1); display:flex; align-items:center; justify-content:flex-end; padding-right:8px; position:relative; }
-  .fs-compare-wife::after { content:''; position:absolute; top:4px; left:8px; right:8px; height:5px; background:rgba(255,255,255,0.3); border-radius:10px; }
-  .fs-compare-husb { background:linear-gradient(90deg,#C9B1FF,#9B7FD4); height:100%; border-radius:0 20px 20px 0; transition:width 1s cubic-bezier(.4,0,.2,1); display:flex; align-items:center; padding-left:8px; position:relative; }
-  .fs-compare-husb::after { content:''; position:absolute; top:4px; left:8px; right:8px; height:5px; background:rgba(255,255,255,0.3); border-radius:10px; }
-  .fs-bar-pct-label { font-size:0.7rem; font-weight:900; color:rgba(255,255,255,0.9); z-index:1; position:relative; }
-  .fs-cat-title { font-size:0.85rem; font-weight:800; color:var(--text-mid); margin-bottom:14px; display:flex; align-items:center; gap:6px; }
-  .fs-legend-row { display:flex; gap:18px; margin-bottom:12px; }
-  .fs-leg-item { display:flex; align-items:center; gap:5px; font-size:0.75rem; font-weight:700; color:var(--text-mid); }
-  .fs-leg-dot { width:10px; height:10px; border-radius:50%; }
-  .fs-cat-list { display:flex; flex-direction:column; gap:2px; }
-  .fs-cat-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px dashed #F5EEF5; }
-  .fs-cat-row:last-child{border-bottom:none}
-  .fs-cat-emoji { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
-  .fs-cat-name { flex:1; font-size:0.82rem; font-weight:700; color:var(--text-dark); }
-  .fs-cat-bars { display:flex; flex-direction:column; gap:4px; width:130px; }
-  .fs-cat-mini-row { display:flex; align-items:center; gap:4px; }
-  .fs-cat-mini-track { flex:1; height:8px; background:#F5EEF5; border-radius:10px; overflow:hidden; }
-  .fs-cat-mini-fill { height:100%; border-radius:10px; transition:width 0.8s ease; }
-  .fs-cat-mini-val { font-size:0.65rem; font-weight:800; width:52px; text-align:right; flex-shrink:0; }
-  .fs-date-filter { display:flex; gap:12px; margin-bottom:28px; padding:16px 18px; background:#FFF8FB; border-radius:20px; border:1px solid #F0E0F0; flex-wrap:wrap; align-items:center; justify-content:space-between; }
-  .fs-date-filter-group { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-  .fs-date-filter-group label { font-weight:800; font-size:0.75rem; color:var(--text-mid); }
-  .fs-date-input { padding:8px 12px; border:2px solid #F0E0F0; border-radius:14px; font-family:'Nunito',sans-serif; font-size:0.8rem; font-weight:600; color:var(--text-dark); background:white; transition:border 0.3s; }
-  .fs-date-input:focus { border-color:var(--pink-dark); outline:none; }
-  .btn-reset-filter { background:#F5EEF5; border:none; padding:7px 18px; border-radius:30px; font-weight:800; font-size:0.75rem; font-family:'Nunito',sans-serif; color:#8B6F8B; cursor:pointer; transition:0.2s; }
-  .btn-reset-filter:hover { background:#FFD6E0; color:#e8547a; }
-
-  /* FORM */
-  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-  .form-card { background:var(--card-bg); border-radius:var(--radius); padding:28px; box-shadow:var(--shadow); }
-  .form-title { font-size:1.1rem; font-weight:900; margin-bottom:20px; display:flex; align-items:center; gap:8px; }
-  .form-title.income-title{color:var(--mint-dark)} .form-title.expense-title{color:var(--pink-deep)}
-  .form-group { margin-bottom:16px; }
-  .form-label { display:block; font-size:0.8rem; font-weight:700; color:var(--text-mid); margin-bottom:6px; }
-  .form-input,.form-select { width:100%; padding:12px 14px; border:2px solid #F0E0F0; border-radius:var(--radius-sm); font-family:'Nunito',sans-serif; font-size:0.9rem; font-weight:600; color:var(--text-dark); background:var(--bg); outline:none; transition:border-color 0.3s,box-shadow 0.3s; }
-  .form-input:focus,.form-select:focus { border-color:var(--pink-dark); box-shadow:0 0 0 4px rgba(255,133,161,0.15); }
-  .btn-submit { width:100%; padding:14px; border:none; border-radius:var(--radius-sm); font-family:'Nunito',sans-serif; font-size:1rem; font-weight:800; cursor:pointer; transition:all 0.3s; display:flex; align-items:center; justify-content:center; gap:8px; }
-  .btn-income { background:linear-gradient(135deg,var(--mint-dark),#6FC9A8); color:#fff; }
-  .btn-expense { background:linear-gradient(135deg,var(--pink-dark),#E86B8B); color:#fff; }
-  .btn-submit:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.15); }
-
-  /* HISTORY */
-  .history-filters { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
-  .filter-btn { padding:8px 18px; border-radius:20px; border:2px solid #F0E0F0; background:var(--card-bg); font-family:'Nunito',sans-serif; font-size:0.85rem; font-weight:700; color:var(--text-mid); cursor:pointer; transition:all 0.3s; }
-  .filter-btn.active { border-color:var(--pink-dark); background:var(--pink-light); color:var(--pink-deep); }
-  .history-card { background:var(--card-bg); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); }
-  .history-item { display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px dashed #F0E0F0; flex-wrap:wrap; }
-  .history-item:last-child{border-bottom:none}
-  .delete-btn { background:none; border:none; cursor:pointer; font-size:1rem; opacity:0.4; transition:opacity 0.2s; padding:4px; }
-  .delete-btn:hover { opacity:1; }
-
-  /* TOAST */
-  .toast { position:fixed; bottom:30px; right:30px; background:linear-gradient(135deg,var(--pink-dark),var(--purple-dark)); color:#fff; padding:14px 22px; border-radius:16px; font-weight:700; font-size:0.9rem; box-shadow:0 8px 32px rgba(200,100,150,0.3); transform:translateY(100px); opacity:0; transition:all 0.4s ease; z-index:1000; display:flex; align-items:center; gap:8px; }
-  .toast.show { transform:translateY(0); opacity:1; }
-
-  .empty-state { text-align:center; padding:40px 20px; color:var(--text-light); font-weight:700; }
-  .empty-state .empty-icon { font-size:3rem; margin-bottom:12px; }
-
-  @media(max-width:700px){
-    .summary-grid,.charts-grid,.form-grid,.fs-summary-cards{grid-template-columns:1fr}
-    .header h1{font-size:2rem} .nav-tabs{flex-direction:column}
-    .modal-box{padding:24px 20px}
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dompet Sayang</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="deco">🌸</div><div class="deco">💕</div><div class="deco">✨</div><div class="deco">🌷</div><div class="deco">🦋</div>
+<div class="deco">🌸</div>
+<div class="deco">💕</div>
+<div class="deco">✨</div>
+<div class="deco">🌷</div>
+<div class="deco">🦋</div>
 
-<!-- ====== GITHUB SETUP MODAL ====== -->
 <div class="modal-overlay" id="github-modal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <span class="modal-icon">🔗</span>
-      <h2>Hubungkan ke GitHub</h2>
-      <p>Masukkan informasi GitHub kamu agar data Dompet Sayang tersimpan & tersinkronisasi otomatis 💕</p>
+    <div class="modal-box">
+        <div class="modal-header">
+            <span class="modal-icon">🔗</span>
+            <h2>Hubungkan ke GitHub</h2>
+            <p>Masukkan informasi GitHub kamu agar data Dompet Sayang tersimpan & tersinkronisasi otomatis 💕</p>
+        </div>
+
+        <div class="modal-form-group">
+            <label class="modal-label">👤 Username GitHub</label>
+            <input type="text" id="gh-username" class="modal-input" placeholder="contoh: Keynandz" autocomplete="off">
+        </div>
+
+        <div class="modal-form-group">
+            <label class="modal-label">📦 Nama Repository</label>
+            <input type="text" id="gh-repo" class="modal-input" placeholder="contoh: dompet-keuangan">
+            <div class="modal-input-hint">Repository harus sudah dibuat di GitHub. Boleh private ✨</div>
+        </div>
+
+        <div class="modal-form-group">
+            <label class="modal-label">📄 Path File JSON di Repo</label>
+            <input type="text" id="gh-filepath" class="modal-input" placeholder="contoh: dompet_sayang.json" value="dompet_sayang.json">
+            <div class="modal-input-hint">Nama file JSON tempat menyimpan data. Jika belum ada, akan otomatis dibuat 🌸</div>
+        </div>
+
+        <hr class="modal-divider">
+
+        <div class="modal-form-group">
+            <label class="modal-label">🔑 GitHub Personal Access Token</label>
+            <div class="modal-token-wrap">
+                <input type="password" id="gh-token" class="modal-input" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+                <button class="btn-eye" onclick="toggleTokenVisibility()" id="btn-eye-toggle">👁️</button>
+            </div>
+            <div class="modal-input-hint">
+                Buat token di <a href="https://github.com/settings/tokens/new" target="_blank">GitHub → Settings → Developer Settings → Personal Access Tokens → Tokens (classic)</a>.
+                Centang permission: <strong>repo</strong> (full control). Token disimpan hanya di browser kamu (localStorage), tidak dikirim ke server lain. 🔒
+            </div>
+        </div>
+
+        <button class="btn-modal-connect" id="btn-connect-github" onclick="connectGitHub()">
+            🔗 Hubungkan & Sync Sekarang
+        </button>
+        <div class="modal-error" id="modal-error"></div>
+        <div class="modal-success" id="modal-success"></div>
     </div>
-
-    <div class="modal-form-group">
-      <label class="modal-label">👤 Username GitHub</label>
-      <input type="text" id="gh-username" class="modal-input" placeholder="contoh: Keynandz" autocomplete="off">
-    </div>
-
-    <div class="modal-form-group">
-      <label class="modal-label">📦 Nama Repository</label>
-      <input type="text" id="gh-repo" class="modal-input" placeholder="contoh: dompet-sayang">
-      <div class="modal-input-hint">Repository harus sudah dibuat di GitHub. Boleh private ✨</div>
-    </div>
-
-    <div class="modal-form-group">
-      <label class="modal-label">📄 Path File JSON di Repo</label>
-      <input type="text" id="gh-filepath" class="modal-input" placeholder="contoh: dompet_sayang.json" value="dompet_sayang.json">
-      <div class="modal-input-hint">Nama file JSON tempat menyimpan data. Jika belum ada, akan otomatis dibuat 🌸</div>
-    </div>
-
-    <hr class="modal-divider">
-
-    <div class="modal-form-group">
-      <label class="modal-label">🔑 GitHub Personal Access Token</label>
-      <div class="modal-token-wrap">
-        <input type="password" id="gh-token" class="modal-input" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
-        <button class="btn-eye" onclick="toggleTokenVisibility()" id="btn-eye-toggle">👁️</button>
-      </div>
-      <div class="modal-input-hint">
-        Buat token di <a href="https://github.com/settings/tokens/new" target="_blank">GitHub → Settings → Developer Settings → Personal Access Tokens → Tokens (classic)</a>.
-        Centang permission: <strong>repo</strong> (full control). Token disimpan hanya di browser kamu (localStorage), tidak dikirim ke server lain. 🔒
-      </div>
-    </div>
-
-    <button class="btn-modal-connect" id="btn-connect-github" onclick="connectGitHub()">
-      🔗 Hubungkan & Sync Sekarang
-    </button>
-    <div class="modal-error" id="modal-error"></div>
-    <div class="modal-success" id="modal-success"></div>
-  </div>
 </div>
 
 <div class="wrapper">
 
-  <!-- GITHUB BANNER -->
-  <div class="github-banner connecting" id="github-banner">
-    <div class="banner-icon" id="banner-icon">⏳</div>
-    <div class="banner-text">
-      <span id="banner-msg">Menghubungkan ke GitHub...</span>
-      <small id="banner-sub">Mohon tunggu sebentar ya 🌸</small>
-    </div>
-    <button class="btn-banner settings" id="btn-banner-settings" onclick="openGitHubModal()" style="display:none">⚙️ Pengaturan</button>
-    <button class="btn-banner sync" id="btn-banner-sync" onclick="syncFromGitHub(true)" style="display:none">🔄 Sync Manual</button>
-  </div>
-
-  <!-- HEADER -->
-  <div class="header">
-    <div class="save-indicator nosave" id="save-indicator">⏳ Menghubungkan...</div>
-    <h1>🌸 Dompet Sayang 🌸</h1>
-    <p>Catatan uang kita dengan penuh cinta 💕</p>
-  </div>
-
-  <!-- NAV TABS -->
-  <div class="nav-tabs">
-    <button class="tab-btn tab-dashboard active" onclick="showTab('dashboard')">📊 Dashboard</button>
-    <button class="tab-btn tab-input" onclick="showTab('input')">✏️ Catat Transaksi</button>
-    <button class="tab-btn tab-history" onclick="showTab('history')">📋 Riwayat</button>
-  </div>
-
-  <!-- DASHBOARD -->
-  <div id="tab-dashboard" class="section active">
-    <div class="summary-grid">
-      <div class="sum-card income"><div class="sum-icon">💚</div><div class="sum-label">Total Pemasukan</div><div class="sum-amount" id="total-income">Rp 0</div></div>
-      <div class="sum-card expense"><div class="sum-icon">🌸</div><div class="sum-label">Total Pengeluaran</div><div class="sum-amount" id="total-expense">Rp 0</div></div>
-      <div class="sum-card balance"><div class="sum-icon">✨</div><div class="sum-label">Saldo Saat Ini</div><div class="sum-amount" id="total-balance">Rp 0</div></div>
-    </div>
-
-    <div class="fund-source-section">
-      <div class="chart-title">💝 Pengeluaran: Istri vs Suami</div>
-      <div class="fs-date-filter">
-        <div class="fs-date-filter-group">
-          <label>📅 Mulai dari:</label>
-          <input type="date" id="fundsource-start-date" class="fs-date-input" value="2024-01-01">
-          <label>📅 Sampai dengan:</label>
-          <input type="date" id="fundsource-end-date" class="fs-date-input" value="">
-          <button class="btn-reset-filter" onclick="resetFundSourceDateFilter()">⟳ Reset Tanggal</button>
+    <div class="github-banner connecting" id="github-banner">
+        <div class="banner-icon" id="banner-icon">⏳</div>
+        <div class="banner-text">
+            <span id="banner-msg">Menghubungkan ke GitHub...</span>
+            <small id="banner-sub">Mohon tunggu sebentar ya 🌸</small>
         </div>
-      </div>
-      <div id="fund-source-content">
-        <div class="empty-state"><div class="empty-icon">💰</div><p>Belum ada data pengeluaran<br>dengan sumber dana</p></div>
-      </div>
+        <button class="btn-banner settings" id="btn-banner-settings" onclick="openGitHubModal()" style="display:none">⚙️ Pengaturan</button>
+        <button class="btn-banner sync" id="btn-banner-sync" onclick="syncFromGitHub(true)" style="display:none">🔄 Sync Manual</button>
     </div>
 
-    <div class="charts-grid">
-      <div class="chart-card">
-        <div class="chart-title">🌺 Pengeluaran per Kategori</div>
-        <div class="donut-wrap">
-          <svg viewBox="0 0 120 120" width="120" height="120" id="donut-expense"><circle cx="60" cy="60" r="46" fill="none" stroke="#F5EEF5" stroke-width="18"/><text x="60" y="64" text-anchor="middle" font-family="Nunito,sans-serif" font-size="10" font-weight="900" fill="#8B6F8B">Kosong</text></svg>
-          <div class="legend" id="legend-expense"><div style="font-size:0.8rem;color:#BBA5BB;font-weight:700;">Belum ada data 🌸</div></div>
-        </div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">💚 Pemasukan per Sumber</div>
-        <div class="donut-wrap">
-          <svg viewBox="0 0 120 120" width="120" height="120" id="donut-income"><circle cx="60" cy="60" r="46" fill="none" stroke="#F5EEF5" stroke-width="18"/><text x="60" y="64" text-anchor="middle" font-family="Nunito,sans-serif" font-size="10" font-weight="900" fill="#6FD4AB">Kosong</text></svg>
-          <div class="legend" id="legend-income"><div style="font-size:0.8rem;color:#BBA5BB;font-weight:700;">Belum ada data 🌱</div></div>
-        </div>
-      </div>
+    <div class="header">
+        <div class="save-indicator nosave" id="save-indicator">⏳ Menghubungkan...</div>
+        <h1>🌸 Dompet Sayang 🌸</h1>
+        <p>Catatan uang kita dengan penuh cinta 💕</p>
     </div>
-    <div class="chart-card" style="margin-bottom:24px;">
-      <div class="chart-title">📅 Aktivitas Bulan Ini</div>
-      <div class="bar-chart" id="monthly-bars"><div class="empty-state" style="padding:16px 0;">Belum ada transaksi bulan ini ✨</div></div>
-    </div>
-    <div class="recent-card">
-      <div class="chart-title">🕐 Transaksi Terbaru</div>
-      <div id="recent-list"><div class="empty-state"><div class="empty-icon">🌸</div><p>Belum ada transaksi<br>Yuk catat keuanganmu!</p></div></div>
-    </div>
-  </div>
 
-  <!-- INPUT -->
-  <div id="tab-input" class="section">
-    <div class="form-grid">
-      <div class="form-card">
-        <div class="form-title income-title">💚 Catat Pemasukan</div>
-        <div class="form-group"><label class="form-label">Sumber Pemasukan</label>
-          <select class="form-select" id="income-source">
-            <option value="">-- Pilih Sumber --</option>
-            <option value="Gaji">💼 Gaji / Salary</option>
-            <option value="Bisnis">🏪 Bisnis</option><option value="Investasi">📈 Investasi</option>
-            <option value="Hadiah">🎁 Hadiah</option><option value="Transfer">💸 Transfer dari Orang</option>
-            <option value="Lainnya">✨ Lainnya</option>
-          </select></div>
-        <div class="form-group"><label class="form-label">Keterangan</label><input class="form-input" type="text" id="income-note" placeholder="Misal: Gaji bulan Januari..."></div>
-        <div class="form-group"><label class="form-label">Jumlah (Rp)</label><input class="form-input" type="number" id="income-amount" placeholder="0" min="0"></div>
-        <div class="form-group"><label class="form-label">Tanggal</label><input class="form-input" type="date" id="income-date"></div>
-        <button class="btn-submit btn-income" onclick="addTransaction('income')">💚 Simpan Pemasukan</button>
-      </div>
-      <div class="form-card">
-        <div class="form-title expense-title">🌸 Catat Pengeluaran</div>
-        <div class="form-group"><label class="form-label">Kategori Pengeluaran</label>
-          <select class="form-select" id="expense-category">
-            <option value="">-- Pilih Kategori --</option>
-            <option value="Makanan">🍱 Makanan & Minuman</option><option value="Belanja">🛍️ Belanja & Fashion</option>
-            <option value="Transport">🚗 Transportasi</option><option value="Kesehatan">💊 Kesehatan & Kecantikan</option>
-            <option value="Tagihan">💡 Tagihan & Utilitas</option><option value="Hiburan">🎉 Hiburan & Jalan-jalan</option>
-            <option value="Pendidikan">📚 Pendidikan</option><option value="Rumah">🏠 Kebutuhan Rumah</option>
-            <option value="Anak">👶 Anak & Keluarga</option><option value="Lainnya">✨ Lainnya</option>
-          </select></div>
-        <div class="form-group"><label class="form-label">💰 Sumber Dana</label>
-          <select class="form-select" id="expense-fund-source">
-            <option value="">-- Pilih Sumber Dana --</option>
-            <option value="Istri Tercantik">👸 Istri Tercantik</option>
-            <option value="Suami Risma">🤵 Suami Risma</option>
-          </select>
-          <div style="font-size:0.7rem;color:#BBA5BB;margin-top:4px;">Pilih siapa yang mengeluarkan dana untuk transaksi ini.</div>
-        </div>
-        <div class="form-group"><label class="form-label">Keterangan</label><input class="form-input" type="text" id="expense-note" placeholder="Misal: Beli skincare..."></div>
-        <div class="form-group"><label class="form-label">Jumlah (Rp)</label><input class="form-input" type="number" id="expense-amount" placeholder="0" min="0"></div>
-        <div class="form-group"><label class="form-label">Tanggal</label><input class="form-input" type="date" id="expense-date"></div>
-        <button class="btn-submit btn-expense" onclick="addTransaction('expense')">🌸 Simpan Pengeluaran</button>
-      </div>
+    <div class="nav-tabs">
+        <button class="tab-btn tab-dashboard active" onclick="showTab('dashboard')">📊 Dashboard</button>
+        <button class="tab-btn tab-input" onclick="showTab('input')">✏️ Catat Transaksi</button>
+        <button class="tab-btn tab-history" onclick="showTab('history')">📋 Riwayat</button>
     </div>
-  </div>
 
-  <!-- HISTORY -->
-  <div id="tab-history" class="section">
-    <div class="history-filters">
-      <button class="filter-btn active" onclick="filterHistory('all',this)">🌈 Semua</button>
-      <button class="filter-btn" onclick="filterHistory('income',this)">💚 Pemasukan</button>
-      <button class="filter-btn" onclick="filterHistory('expense',this)">🌸 Pengeluaran</button>
+    <div id="tab-dashboard" class="section active">
+        <div class="summary-grid">
+            <div class="sum-card income"><div class="sum-icon">💚</div><div class="sum-label">Total Pemasukan</div><div class="sum-amount" id="total-income">Rp 0</div></div>
+            <div class="sum-card expense"><div class="sum-icon">🌸</div><div class="sum-label">Total Pengeluaran</div><div class="sum-amount" id="total-expense">Rp 0</div></div>
+            <div class="sum-card balance"><div class="sum-icon">✨</div><div class="sum-label">Saldo Saat Ini</div><div class="sum-amount" id="total-balance">Rp 0</div></div>
+        </div>
+
+        <div class="fund-source-section">
+            <div class="chart-title">💝 Pengeluaran: Istri vs Suami</div>
+            <div class="fs-date-filter">
+                <div class="fs-date-filter-group">
+                    <label>📅 Mulai dari:</label>
+                    <input type="date" id="fundsource-start-date" class="fs-date-input" value="2024-01-01">
+                    <label>📅 Sampai dengan:</label>
+                    <input type="date" id="fundsource-end-date" class="fs-date-input" value="">
+                    <button class="btn-reset-filter" onclick="resetFundSourceDateFilter()">⟳ Reset Tanggal</button>
+                </div>
+            </div>
+            <div id="fund-source-content">
+                <div class="empty-state"><div class="empty-icon">💰</div><p>Belum ada data pengeluaran<br>dengan sumber dana</p></div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <div class="chart-title">🌺 Pengeluaran per Kategori</div>
+                <div class="donut-wrap">
+                    <svg viewBox="0 0 120 120" width="120" height="120" id="donut-expense">
+                        <circle cx="60" cy="60" r="46" fill="none" stroke="#F5EEF5" stroke-width="18"/>
+                        <text x="60" y="64" text-anchor="middle" font-family="Nunito,sans-serif" font-size="10" font-weight="900" fill="#8B6F8B">Kosong</text>
+                    </svg>
+                    <div class="legend" id="legend-expense"><div style="font-size:0.8rem;color:#BBA5BB;font-weight:700;">Belum ada data 🌸</div></div>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">💚 Pemasukan per Sumber</div>
+                <div class="donut-wrap">
+                    <svg viewBox="0 0 120 120" width="120" height="120" id="donut-income">
+                        <circle cx="60" cy="60" r="46" fill="none" stroke="#F5EEF5" stroke-width="18"/>
+                        <text x="60" y="64" text-anchor="middle" font-family="Nunito,sans-serif" font-size="10" font-weight="900" fill="#6FD4AB">Kosong</text>
+                    </svg>
+                    <div class="legend" id="legend-income"><div style="font-size:0.8rem;color:#BBA5BB;font-weight:700;">Belum ada data 🌱</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-card" style="margin-bottom:24px;">
+            <div class="chart-title">📅 Aktivitas Bulan Ini</div>
+            <div class="bar-chart" id="monthly-bars"><div class="empty-state" style="padding:16px 0;">Belum ada transaksi bulan ini ✨</div></div>
+        </div>
+
+        <div class="recent-card">
+            <div class="chart-title">🕐 Transaksi Terbaru</div>
+            <div id="recent-list"><div class="empty-state"><div class="empty-icon">🌸</div><p>Belum ada transaksi<br>Yuk catat keuanganmu!</p></div></div>
+        </div>
     </div>
-    <div class="history-card"><div id="history-list"></div></div>
-  </div>
+
+    <div id="tab-input" class="section">
+        <div class="form-grid">
+            <div class="form-card">
+                <div class="form-title income-title">💚 Catat Pemasukan</div>
+                <div class="form-group">
+                    <label class="form-label">Sumber Pemasukan</label>
+                    <select class="form-select" id="income-source">
+                        <option value="">-- Pilih Sumber --</option>
+                        <option value="Gaji">💼 Gaji / Salary</option>
+                        <option value="Bisnis">🏪 Bisnis</option>
+                        <option value="Investasi">📈 Investasi</option>
+                        <option value="Hadiah">🎁 Hadiah</option>
+                        <option value="Transfer">💸 Transfer dari Orang</option>
+                        <option value="Lainnya">✨ Lainnya</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Keterangan</label>
+                    <input class="form-input" type="text" id="income-note" placeholder="Misal: Gaji bulan Januari...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Jumlah (Rp)</label>
+                    <input class="form-input" type="number" id="income-amount" placeholder="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tanggal</label>
+                    <input class="form-input" type="date" id="income-date">
+                </div>
+                <button class="btn-submit btn-income" onclick="addTransaction('income')">💚 Simpan Pemasukan</button>
+            </div>
+
+            <div class="form-card">
+                <div class="form-title expense-title">🌸 Catat Pengeluaran</div>
+                <div class="form-group">
+                    <label class="form-label">Kategori Pengeluaran</label>
+                    <select class="form-select" id="expense-category">
+                        <option value="">-- Pilih Kategori --</option>
+                        <option value="Makanan">🍱 Makanan & Minuman</option>
+                        <option value="Belanja">🛍️ Belanja & Fashion</option>
+                        <option value="Transport">🚗 Transportasi</option>
+                        <option value="Kesehatan">💊 Kesehatan & Kecantikan</option>
+                        <option value="Tagihan">💡 Tagihan & Utilitas</option>
+                        <option value="Hiburan">🎉 Hiburan & Jalan-jalan</option>
+                        <option value="Pendidikan">📚 Pendidikan</option>
+                        <option value="Rumah">🏠 Kebutuhan Rumah</option>
+                        <option value="Anak">👶 Anak & Keluarga</option>
+                        <option value="Lainnya">✨ Lainnya</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">💰 Sumber Dana</label>
+                    <select class="form-select" id="expense-fund-source">
+                        <option value="">-- Pilih Sumber Dana --</option>
+                        <option value="Istri Tercantik">👸 Istri Tercantik</option>
+                        <option value="Suami Risma">🤵 Suami Risma</option>
+                    </select>
+                    <div style="font-size:0.7rem;color:#BBA5BB;margin-top:4px;">Pilih siapa yang mengeluarkan dana untuk transaksi ini.</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Keterangan</label>
+                    <input class="form-input" type="text" id="expense-note" placeholder="Misal: Beli skincare...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Jumlah (Rp)</label>
+                    <input class="form-input" type="number" id="expense-amount" placeholder="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tanggal</label>
+                    <input class="form-input" type="date" id="expense-date">
+                </div>
+                <button class="btn-submit btn-expense" onclick="addTransaction('expense')">🌸 Simpan Pengeluaran</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-history" class="section">
+        <div class="history-filters">
+            <button class="filter-btn active" onclick="filterHistory('all',this)">🌈 Semua</button>
+            <button class="filter-btn" onclick="filterHistory('income',this)">💚 Pemasukan</button>
+            <button class="filter-btn" onclick="filterHistory('expense',this)">🌸 Pengeluaran</button>
+        </div>
+        <div class="history-card"><div id="history-list"></div></div>
+    </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script>
-// ============================================================
-//  GITHUB SYNC ENGINE - Dompet Sayang
-// ============================================================
-
-let db = { transactions: [] };
-let ghConfig = null;  // { username, repo, filepath, token }
-let ghFileSHA = null; // SHA dari file saat ini (dibutuhkan untuk update)
-let isSyncing = false;
-
-const STORAGE_KEY = 'dompet_sayang_gh_config';
-
-// ---- Simpan & muat konfigurasi dari localStorage ----
-function saveConfig(cfg) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
-}
-function loadConfig() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch(e) { return null; }
-}
-function clearConfig() {
-  localStorage.removeItem(STORAGE_KEY);
-}
-
-// ---- GitHub API helpers ----
-function ghApiUrl(cfg) {
-  const fp = cfg.filepath.startsWith('/') ? cfg.filepath.slice(1) : cfg.filepath;
-  return `https://api.github.com/repos/${cfg.username}/${cfg.repo}/contents/${fp}`;
-}
-
-async function ghGetFile(cfg) {
-  const res = await fetch(ghApiUrl(cfg), {
-    headers: {
-      'Authorization': `token ${cfg.token}`,
-      'Accept': 'application/vnd.github.v3+json'
-    }
-  });
-  if (res.status === 404) return null; // file belum ada
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.message || `HTTP ${res.status}`);
-  }
-  return await res.json();
-}
-
-async function ghPutFile(cfg, content, sha, commitMsg) {
-  const body = {
-    message: commitMsg || '💰 Update Dompet Sayang',
-    content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
-    ...(sha ? { sha } : {})
-  };
-  const res = await fetch(ghApiUrl(cfg), {
-    method: 'PUT',
-    headers: {
-      'Authorization': `token ${cfg.token}`,
-      'Content-Type': 'application/json',
-      'Accept': 'application/vnd.github.v3+json'
-    },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.message || `HTTP ${res.status}`);
-  }
-  return await res.json();
-}
-
-// ---- Decode Base64 content dari GitHub ----
-function decodeGHContent(base64Str) {
-  try {
-    return JSON.parse(decodeURIComponent(escape(atob(base64Str.replace(/\n/g, '')))));
-  } catch(e) {
-    throw new Error('Gagal membaca isi file JSON dari GitHub. Pastikan formatnya benar.');
-  }
-}
-
-// ============================================================
-//  KONEKSI & SYNC
-// ============================================================
-
-async function connectGitHub() {
-  const username = document.getElementById('gh-username').value.trim();
-  const repo     = document.getElementById('gh-repo').value.trim();
-  const filepath = document.getElementById('gh-filepath').value.trim() || 'dompet_sayang.json';
-  const token    = document.getElementById('gh-token').value.trim();
-
-  setModalError('');
-  setModalSuccess('');
-
-  if (!username) return setModalError('❗ Username GitHub tidak boleh kosong!');
-  if (!repo)     return setModalError('❗ Nama repository tidak boleh kosong!');
-  if (!token)    return setModalError('❗ Token GitHub tidak boleh kosong!');
-
-  const btn = document.getElementById('btn-connect-github');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spin">⏳</span> Menghubungkan...';
-
-  const cfg = { username, repo, filepath, token };
-
-  try {
-    const fileData = await ghGetFile(cfg);
-
-    if (fileData) {
-      // File ada, load datanya
-      ghFileSHA = fileData.sha;
-      const parsed = decodeGHContent(fileData.content);
-      if (parsed && Array.isArray(parsed.transactions)) {
-        db = parsed;
-      }
-      setModalSuccess(`✅ Berhasil terhubung! Ditemukan ${db.transactions.length} transaksi di GitHub 🌸`);
-    } else {
-      // File belum ada, buat baru dengan data kosong
-      const newData = { transactions: [] };
-      const result = await ghPutFile(cfg, newData, null, '🌸 Inisialisasi Dompet Sayang');
-      ghFileSHA = result.content.sha;
-      db = newData;
-      setModalSuccess('✅ File baru dibuat di GitHub! Siap digunakan 💕');
-    }
-
-    // Simpan config
-    ghConfig = cfg;
-    saveConfig(cfg);
-
-    // Tutup modal setelah sebentar
-    setTimeout(() => {
-      closeGitHubModal();
-      setBannerConnected();
-      renderDashboard();
-      renderHistory(currentFilter);
-      showToast('🔗 Terhubung ke GitHub ' + username + '/' + repo + ' 💕');
-    }, 1200);
-
-  } catch(e) {
-    setModalError('❌ Gagal terhubung: ' + e.message + '. Cek username, repo, dan token ya!');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '🔗 Hubungkan & Sync Sekarang';
-  }
-}
-
-// Sync dari GitHub (ambil data terbaru)
-async function syncFromGitHub(showToastMsg = false) {
-  if (!ghConfig || isSyncing) return;
-  isSyncing = true;
-  setSaveIndicator('saving');
-
-  try {
-    const fileData = await ghGetFile(ghConfig);
-    if (fileData) {
-      ghFileSHA = fileData.sha;
-      const parsed = decodeGHContent(fileData.content);
-      if (parsed && Array.isArray(parsed.transactions)) {
-        db = parsed;
-        renderDashboard();
-        renderHistory(currentFilter);
-        if (showToastMsg) showToast('🔄 Data berhasil disync dari GitHub!');
-      }
-    }
-    setSaveIndicator('saved');
-  } catch(e) {
-    setSaveIndicator('nosave');
-    if (showToastMsg) showToast('⚠️ Gagal sync: ' + e.message);
-  } finally {
-    isSyncing = false;
-  }
-}
-
-// Push data ke GitHub
-async function pushToGitHub(commitMsg) {
-  if (!ghConfig) return;
-  setSaveIndicator('saving');
-  try {
-    // Refresh SHA dulu sebelum push untuk menghindari konflik
-    const fileData = await ghGetFile(ghConfig);
-    const currentSHA = fileData ? fileData.sha : null;
-    ghFileSHA = currentSHA;
-
-    const result = await ghPutFile(ghConfig, db, ghFileSHA, commitMsg || '💰 Update Dompet Sayang');
-    ghFileSHA = result.content.sha;
-    setSaveIndicator('saved');
-  } catch(e) {
-    setSaveIndicator('nosave');
-    showToast('⚠️ Gagal simpan ke GitHub: ' + e.message);
-    console.error('Push error:', e);
-  }
-}
-
-let saveTimer;
-function scheduleSave(commitMsg) {
-  setSaveIndicator('saving');
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => pushToGitHub(commitMsg), 1500);
-}
-
-// ============================================================
-//  MODAL HELPERS
-// ============================================================
-function openGitHubModal() {
-  document.getElementById('github-modal').classList.remove('hidden');
-  if (ghConfig) {
-    document.getElementById('gh-username').value = ghConfig.username || '';
-    document.getElementById('gh-repo').value     = ghConfig.repo || '';
-    document.getElementById('gh-filepath').value = ghConfig.filepath || 'dompet_sayang.json';
-    document.getElementById('gh-token').value    = ghConfig.token || '';
-  }
-}
-function closeGitHubModal() {
-  document.getElementById('github-modal').classList.add('hidden');
-}
-function setModalError(msg) {
-  const el = document.getElementById('modal-error');
-  el.textContent = msg;
-  el.classList.toggle('show', !!msg);
-  document.getElementById('modal-success').classList.remove('show');
-}
-function setModalSuccess(msg) {
-  const el = document.getElementById('modal-success');
-  el.textContent = msg;
-  el.classList.toggle('show', !!msg);
-  document.getElementById('modal-error').classList.remove('show');
-}
-function toggleTokenVisibility() {
-  const inp = document.getElementById('gh-token');
-  const btn = document.getElementById('btn-eye-toggle');
-  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
-  else { inp.type = 'password'; btn.textContent = '👁️'; }
-}
-
-// ============================================================
-//  BANNER HELPERS
-// ============================================================
-function setBannerConnecting() {
-  const b = document.getElementById('github-banner');
-  b.className = 'github-banner connecting';
-  document.getElementById('banner-icon').textContent = '⏳';
-  document.getElementById('banner-msg').textContent = 'Menghubungkan ke GitHub...';
-  document.getElementById('banner-sub').textContent = 'Mohon tunggu sebentar ya 🌸';
-  document.getElementById('btn-banner-settings').style.display = 'none';
-  document.getElementById('btn-banner-sync').style.display = 'none';
-}
-function setBannerConnected() {
-  const b = document.getElementById('github-banner');
-  b.className = 'github-banner connected';
-  document.getElementById('banner-icon').textContent = '✅';
-  document.getElementById('banner-msg').textContent = '🔗 Terhubung: ' + ghConfig.username + '/' + ghConfig.repo;
-  document.getElementById('banner-sub').textContent = '📄 File: ' + ghConfig.filepath + ' · Data otomatis disimpan ke GitHub 💚';
-  document.getElementById('btn-banner-settings').style.display = '';
-  document.getElementById('btn-banner-sync').style.display = '';
-}
-function setBannerError(msg) {
-  const b = document.getElementById('github-banner');
-  b.className = 'github-banner error';
-  document.getElementById('banner-icon').textContent = '⚠️';
-  document.getElementById('banner-msg').textContent = msg || 'Belum terhubung ke GitHub';
-  document.getElementById('banner-sub').textContent = 'Klik pengaturan untuk menghubungkan 🌸';
-  document.getElementById('btn-banner-settings').style.display = '';
-  document.getElementById('btn-banner-sync').style.display = 'none';
-}
-function setSaveIndicator(state) {
-  const el = document.getElementById('save-indicator');
-  el.className = 'save-indicator ' + state;
-  if (state === 'saving') el.textContent = '☁️ Menyimpan ke GitHub...';
-  else if (state === 'saved') el.textContent = '✅ Tersimpan di GitHub';
-  else el.textContent = '⚠️ Belum terhubung GitHub';
-}
-
-// ============================================================
-//  LOGIC TRANSAKSI
-// ============================================================
-const EXPENSE_COLORS = { 'Makanan':'#FF85A1','Belanja':'#C9B1FF','Transport':'#85C7FF','Kesehatan':'#B5EAD7','Tagihan':'#FFEAA7','Hiburan':'#FFB347','Pendidikan':'#DDA0DD','Rumah':'#87CEEB','Anak':'#FFD1DC','Lainnya':'#D3D3D3' };
-const EXPENSE_EMOJI  = { 'Makanan':'🍱','Belanja':'🛍️','Transport':'🚗','Kesehatan':'💊','Tagihan':'💡','Hiburan':'🎉','Pendidikan':'📚','Rumah':'🏠','Anak':'👶','Lainnya':'✨' };
-const EXPENSE_BG     = { 'Makanan':'#FFE4EC','Belanja':'#F0EBFF','Transport':'#E8F4FF','Kesehatan':'#E8FFF5','Tagihan':'#FFFBE8','Hiburan':'#FFF3E8','Pendidikan':'#F5E8FF','Rumah':'#E8F5FF','Anak':'#FFE8EE','Lainnya':'#F5F5F5' };
-const INCOME_COLORS  = { 'Gaji':'#6FD4AB','Freelance':'#85C7FF','Bisnis':'#DDA0DD','Investasi':'#FFEAA7','Hadiah':'#FF85A1','Transfer':'#C9B1FF','Lainnya':'#D3D3D3' };
-const INCOME_EMOJI   = { 'Gaji':'💼','Freelance':'💻','Bisnis':'🏪','Investasi':'📈','Hadiah':'🎁','Transfer':'💸','Lainnya':'✨' };
-
-function fmt(n) { return 'Rp ' + Math.abs(n).toLocaleString('id-ID'); }
-function fmtDate(d) { return new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}); }
-function today() { return new Date().toISOString().split('T')[0]; }
-
-function getFilteredExpensesByDate() {
-  const startDateInput = document.getElementById('fundsource-start-date').value;
-  let endDateInput = document.getElementById('fundsource-end-date').value;
-  if (!endDateInput) { endDateInput = today(); document.getElementById('fundsource-end-date').value = endDateInput; }
-  const startDate = new Date(startDateInput || '2024-01-01');
-  const endDate   = new Date(endDateInput);
-  endDate.setHours(23,59,59,999);
-  return db.transactions.filter(t => {
-    if (t.type !== 'expense' || !t.fundSource) return false;
-    const tDate = new Date(t.date);
-    return tDate >= startDate && tDate <= endDate;
-  });
-}
-
-function resetFundSourceDateFilter() {
-  document.getElementById('fundsource-start-date').value = '2024-01-01';
-  document.getElementById('fundsource-end-date').value = today();
-  renderFundSourceChart();
-  showToast('🗓️ Filter tanggal direset');
-}
-
-function renderFundSourceChart() {
-  const expenses = getFilteredExpensesByDate();
-  const el = document.getElementById('fund-source-content');
-  if (!expenses.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">💰</div><p>Belum ada data pengeluaran dengan sumber dana di rentang tanggal yang dipilih 🌸</p></div>';
-    return;
-  }
-  const wifeTotal = expenses.filter(t=>t.fundSource==='Istri Tercantik').reduce((s,t)=>s+t.amount,0);
-  const husbTotal = expenses.filter(t=>t.fundSource==='Suami Risma').reduce((s,t)=>s+t.amount,0);
-  const grandTotal = wifeTotal + husbTotal || 1;
-  const wifePct = Math.round(wifeTotal/grandTotal*100);
-  const husbPct = 100-wifePct;
-  const wifeTx = expenses.filter(t=>t.fundSource==='Istri Tercantik').length;
-  const husbTx = expenses.filter(t=>t.fundSource==='Suami Risma').length;
-  const cats = {};
-  expenses.forEach(t => {
-    if (!cats[t.category]) cats[t.category] = {wife:0,husb:0};
-    if (t.fundSource==='Istri Tercantik') cats[t.category].wife+=t.amount;
-    else if (t.fundSource==='Suami Risma') cats[t.category].husb+=t.amount;
-  });
-  const catEntries = Object.entries(cats).sort((a,b)=>(b[1].wife+b[1].husb)-(a[1].wife+a[1].husb));
-  const maxCat = Math.max(...catEntries.map(([,v])=>Math.max(v.wife,v.husb)),1);
-  const catRowsHtml = catEntries.map(([cat,vals])=>{
-    const emoji=EXPENSE_EMOJI[cat]||'✨', bg=EXPENSE_BG[cat]||'#F5F5F5';
-    const wPct=Math.round(vals.wife/maxCat*100), hPct=Math.round(vals.husb/maxCat*100);
-    return `<div class="fs-cat-row"><div class="fs-cat-emoji" style="background:${bg}">${emoji}</div><div class="fs-cat-name">${cat}</div><div class="fs-cat-bars"><div class="fs-cat-mini-row"><div class="fs-cat-mini-track"><div class="fs-cat-mini-fill" style="width:${wPct}%;background:linear-gradient(90deg,#FFB3C6,#e8547a);"></div></div><div class="fs-cat-mini-val" style="color:#e8547a;">${vals.wife>0?fmt(vals.wife).replace('Rp ',''):'—'}</div></div><div class="fs-cat-mini-row"><div class="fs-cat-mini-track"><div class="fs-cat-mini-fill" style="width:${hPct}%;background:linear-gradient(90deg,#C9B1FF,#9B7FD4);"></div></div><div class="fs-cat-mini-val" style="color:#9B7FD4;">${vals.husb>0?fmt(vals.husb).replace('Rp ',''):'—'}</div></div></div></div>`;
-  }).join('');
-  el.innerHTML = `
-    <div class="fs-summary-cards">
-      <div class="fs-sum-card wife"><div class="card-crown">👸</div><div class="card-name">Istri Tercantik</div><div class="card-total">${fmt(wifeTotal)}</div><div class="card-pct">${wifePct}% dari total</div><div class="card-txcount">${wifeTx} transaksi</div></div>
-      <div class="fs-sum-card husb"><div class="card-crown">🤵</div><div class="card-name">Suami Risma</div><div class="card-total">${fmt(husbTotal)}</div><div class="card-pct">${husbPct}% dari total</div><div class="card-txcount">${husbTx} transaksi</div></div>
-    </div>
-    <div class="fs-compare-wrap">
-      <div class="fs-compare-label"><span class="wife-lbl">👸 Istri Tercantik · ${wifePct}%</span><span class="husb-lbl">${husbPct}% · Suami Risma 🤵</span></div>
-      <div class="fs-compare-track">
-        <div class="fs-compare-wife" style="width:${wifePct}%">${wifePct>12?`<span class="fs-bar-pct-label">${wifePct}%</span>`:''}</div>
-        <div class="fs-compare-husb" style="width:${husbPct}%">${husbPct>12?`<span class="fs-bar-pct-label">${husbPct}%</span>`:''}</div>
-      </div>
-    </div>
-    ${catEntries.length?`<div><div class="fs-cat-title">📊 Rincian per Kategori</div><div class="fs-legend-row"><div class="fs-leg-item"><div class="fs-leg-dot" style="background:#e8547a;"></div>Istri Tercantik</div><div class="fs-leg-item"><div class="fs-leg-dot" style="background:#9B7FD4;"></div>Suami Risma</div></div><div class="fs-cat-list">${catRowsHtml}</div></div>`:''}`;
-}
-
-function addTransaction(type) {
-  if (!ghConfig) {
-    showToast('⚠️ Hubungkan ke GitHub dulu! Klik ⚙️ Pengaturan di atas.');
-    openGitHubModal();
-    return;
-  }
-  if (type === 'income') {
-    const source = document.getElementById('income-source').value;
-    const note   = document.getElementById('income-note').value.trim();
-    const amount = parseFloat(document.getElementById('income-amount').value);
-    const date   = document.getElementById('income-date').value;
-    if (!source) return showToast('😅 Pilih sumber pemasukan dulu ya!');
-    if (!amount||amount<=0) return showToast('😅 Isi jumlah pemasukan dulu!');
-    if (!date) return showToast('😅 Isi tanggal dulu ya!');
-    db.transactions.unshift({id:Date.now(),type:'income',category:source,note,amount,date,fundSource:null});
-    document.getElementById('income-source').value='';
-    document.getElementById('income-note').value='';
-    document.getElementById('income-amount').value='';
-    showToast('💚 Pemasukan berhasil dicatat!');
-    scheduleSave('💚 Tambah pemasukan: ' + (note||source));
-  } else {
-    const cat        = document.getElementById('expense-category').value;
-    const fundSource = document.getElementById('expense-fund-source').value;
-    const note       = document.getElementById('expense-note').value.trim();
-    const amount     = parseFloat(document.getElementById('expense-amount').value);
-    const date       = document.getElementById('expense-date').value;
-    if (!cat) return showToast('😅 Pilih kategori pengeluaran dulu ya!');
-    if (!fundSource) return showToast('😅 Pilih Sumber Dana dulu!');
-    if (!amount||amount<=0) return showToast('😅 Isi jumlah pengeluaran dulu!');
-    if (!date) return showToast('😅 Isi tanggal dulu ya!');
-    db.transactions.unshift({id:Date.now(),type:'expense',category:cat,note,amount,date,fundSource});
-    document.getElementById('expense-category').value='';
-    document.getElementById('expense-fund-source').value='';
-    document.getElementById('expense-note').value='';
-    document.getElementById('expense-amount').value='';
-    showToast('🌸 Pengeluaran berhasil dicatat!');
-    scheduleSave('🌸 Tambah pengeluaran: ' + (note||cat));
-  }
-  renderDashboard();
-  renderHistory(currentFilter);
-}
-
-function deleteTransaction(id) {
-  const tx = db.transactions.find(t=>t.id===id);
-  db.transactions = db.transactions.filter(t=>t.id!==id);
-  scheduleSave('🗑️ Hapus transaksi: ' + (tx?tx.note||tx.category:''));
-  renderDashboard();
-  renderHistory(currentFilter);
-  showToast('🗑️ Transaksi dihapus!');
-}
-
-function renderDashboard() {
-  const txs = db.transactions;
-  const totalIncome  = txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
-  const totalExpense = txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
-  const balance = totalIncome - totalExpense;
-  document.getElementById('total-income').textContent  = fmt(totalIncome);
-  document.getElementById('total-expense').textContent = fmt(totalExpense);
-  const balEl = document.getElementById('total-balance');
-  balEl.textContent = (balance<0?'- ':'')+fmt(balance);
-  balEl.style.color = balance<0?'#e8547a':'#9B7FD4';
-  renderFundSourceChart();
-  renderDonut('expense',txs.filter(t=>t.type==='expense'),EXPENSE_COLORS,EXPENSE_EMOJI,totalExpense);
-  renderDonut('income', txs.filter(t=>t.type==='income'), INCOME_COLORS, INCOME_EMOJI, totalIncome);
-  renderMonthly(txs);
-  renderRecent(txs.slice(0,5));
-}
-
-function renderDonut(type,txs,colors,emojis,total) {
-  const svgEl=document.getElementById('donut-'+type);
-  const legEl=document.getElementById('legend-'+type);
-  const cats={};
-  txs.forEach(t=>{cats[t.category]=(cats[t.category]||0)+t.amount;});
-  const entries=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
-  if(!entries.length){
-    svgEl.innerHTML=`<circle cx="60" cy="60" r="46" fill="none" stroke="#F5EEF5" stroke-width="18"/><text x="60" y="64" text-anchor="middle" font-family="Nunito,sans-serif" font-size="10" font-weight="900" fill="${type==='expense'?'#8B6F8B':'#6FD4AB'}">Kosong</text>`;
-    legEl.innerHTML='<div style="font-size:0.8rem;color:#BBA5BB;font-weight:700;">Belum ada data 🌸</div>';
-    return;
-  }
-  const circ=2*Math.PI*46; let offset=0, arcs='';
-  entries.forEach(([cat,val])=>{
-    const pct=val/total, dash=pct*circ, gap=circ-dash, color=colors[cat]||'#D3D3D3';
-    arcs+=`<circle cx="60" cy="60" r="46" fill="none" stroke="${color}" stroke-width="18" stroke-dasharray="${dash.toFixed(2)} ${gap.toFixed(2)}" stroke-dashoffset="${(-offset).toFixed(2)}" transform="rotate(-90 60 60)"/>`;
-    offset+=dash;
-  });
-  svgEl.innerHTML=arcs+`<text x="60" y="58" text-anchor="middle" font-family="Nunito,sans-serif" font-size="8" font-weight="700" fill="#8B6F8B">${entries.length}</text><text x="60" y="70" text-anchor="middle" font-family="Nunito,sans-serif" font-size="7" fill="#BBA5BB">kategori</text>`;
-  legEl.innerHTML=entries.slice(0,5).map(([cat,val])=>{
-    const pct=Math.round(val/total*100),color=colors[cat]||'#D3D3D3',emoji=emojis[cat]||'✨';
-    return `<div class="legend-item"><div class="legend-dot" style="background:${color}"></div><span>${emoji} ${cat}</span><span class="legend-pct">${pct}%</span></div>`;
-  }).join('');
-}
-
-function renderMonthly(txs) {
-  const now=new Date();
-  const thisMonth=txs.filter(t=>{const d=new Date(t.date);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});
-  const barEl=document.getElementById('monthly-bars');
-  if(!thisMonth.length){barEl.innerHTML='<div class="empty-state" style="padding:16px 0;">Belum ada transaksi bulan ini ✨</div>';return;}
-  const weeks={1:0,2:0,3:0,4:0};
-  thisMonth.forEach(t=>{if(t.type==='expense'){const d=new Date(t.date).getDate(),w=Math.min(4,Math.ceil(d/7));weeks[w]+=t.amount;}});
-  const maxVal=Math.max(...Object.values(weeks),1);
-  const weekNames=['Minggu 1','Minggu 2','Minggu 3','Minggu 4'];
-  const barColors=['#FFB3C6','#C9B1FF','#B5EAD7','#FFEAA7'];
-  barEl.innerHTML=Object.entries(weeks).map(([w,val],i)=>{
-    const pct=Math.round(val/maxVal*100);
-    return `<div class="bar-row"><div class="bar-label">${weekNames[i]}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${barColors[i]}"></div></div><div class="bar-val">${val>0?fmt(val):'–'}</div></div>`;
-  }).join('');
-}
-
-function renderRecent(txs) {
-  const el=document.getElementById('recent-list');
-  if(!txs.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">🌸</div><p>Belum ada transaksi<br>Yuk catat keuanganmu!</p></div>';return;}
-  el.innerHTML=txs.map(t=>{
-    const isIncome=t.type==='income',emoji=isIncome?(INCOME_EMOJI[t.category]||'✨'):(EXPENSE_EMOJI[t.category]||'✨'),sign=isIncome?'+':'-';
-    const fundSourceHtml=(!isIncome&&t.fundSource)?`<div class="ri-source-badge">💰 ${t.fundSource}</div>`:'';
-    return `<div class="recent-item"><div class="ri-icon ${isIncome?'income-icon':'expense-icon'}">${emoji}</div><div class="ri-info"><div class="ri-name">${t.note||t.category}</div><div class="ri-sub">${t.category} · ${fmtDate(t.date)} ${fundSourceHtml}</div></div><div class="ri-amount ${isIncome?'income-amt':'expense-amt'}">${sign} ${fmt(t.amount)}</div></div>`;
-  }).join('');
-}
-
-let currentFilter='all';
-function filterHistory(type,btn) {
-  currentFilter=type;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderHistory(type);
-}
-function renderHistory(type) {
-  let txs=db.transactions;
-  if(type!=='all') txs=txs.filter(t=>t.type===type);
-  const el=document.getElementById('history-list');
-  if(!txs.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">🌸</div><p>Belum ada transaksi</p></div>';return;}
-  el.innerHTML=txs.map(t=>{
-    const isIncome=t.type==='income',emoji=isIncome?(INCOME_EMOJI[t.category]||'✨'):(EXPENSE_EMOJI[t.category]||'✨'),sign=isIncome?'+':'-';
-    const fundSourceHtml=(!isIncome&&t.fundSource)?`<span style="font-size:0.7rem;background:#f0f0f0;padding:2px 8px;border-radius:20px;margin-left:8px;">💰 ${t.fundSource}</span>`:'';
-    return `<div class="history-item"><div class="ri-icon ${isIncome?'income-icon':'expense-icon'}">${emoji}</div><div class="ri-info"><div class="ri-name">${t.note||t.category} ${fundSourceHtml}</div><div class="ri-sub">${t.category} · ${fmtDate(t.date)}</div></div><div class="ri-amount ${isIncome?'income-amt':'expense-amt'}" style="margin-right:8px;">${sign} ${fmt(t.amount)}</div><button class="delete-btn" onclick="deleteTransaction(${t.id})" title="Hapus">🗑️</button></div>`;
-  }).join('');
-}
-
-function showTab(name) {
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  document.querySelector('.tab-'+name).classList.add('active');
-  if(name==='dashboard') renderDashboard();
-  if(name==='history') renderHistory(currentFilter);
-}
-
-function showToast(msg) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
-}
-
-// ============================================================
-//  INIT
-// ============================================================
-document.getElementById('income-date').value  = today();
-document.getElementById('expense-date').value = today();
-document.getElementById('fundsource-start-date').value = '2024-01-01';
-document.getElementById('fundsource-end-date').value   = today();
-
-document.getElementById('fundsource-start-date').addEventListener('change', ()=>renderFundSourceChart());
-document.getElementById('fundsource-end-date').addEventListener('change',   ()=>renderFundSourceChart());
-
-// Tutup modal saat klik overlay
-document.getElementById('github-modal').addEventListener('click', function(e){
-  if (e.target === this && ghConfig) closeGitHubModal();
-});
-
-// Auto-init: cek apakah sudah ada config tersimpan
-(async function init() {
-  const savedConfig = loadConfig();
-  if (savedConfig) {
-    setBannerConnecting();
-    ghConfig = savedConfig;
-    try {
-      await syncFromGitHub(false);
-      setBannerConnected();
-      setSaveIndicator('saved');
-      renderDashboard();
-      renderHistory(currentFilter);
-      showToast('✅ Data berhasil dimuat dari GitHub ' + savedConfig.username + '/' + savedConfig.repo);
-    } catch(e) {
-      setBannerError('Gagal terhubung ke GitHub: ' + e.message);
-      setSaveIndicator('nosave');
-      openGitHubModal();
-    }
-  } else {
-    // Belum pernah setup, tampilkan modal
-    setBannerError('Belum terhubung ke GitHub');
-    setSaveIndicator('nosave');
-    openGitHubModal();
-    renderDashboard();
-    renderHistory(currentFilter);
-  }
-})();
-</script>
+<script src="script.js"></script>
 </body>
 </html>
