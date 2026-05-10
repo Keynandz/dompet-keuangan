@@ -1,6 +1,15 @@
 {
   "transactions": [
     {
+      "id": 1778423868289,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Ramen",
+      "amount": 59000,
+      "date": "2026-05-06",
+      "fundSource": "Istri Tercantik"
+    },
+    {
       "id": 1777779057931,
       "type": "expense",
       "category": "Makanan",
