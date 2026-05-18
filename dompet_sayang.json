@@ -1,6 +1,15 @@
 {
   "transactions": [
     {
+      "id": 1779069135026,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Beli jajan di alfa cileungsi",
+      "amount": 83000,
+      "date": "2026-05-17",
+      "fundSource": "Istri Tercantik"
+    },
+    {
       "id": 1778423980945,
       "type": "expense",
       "category": "Makanan",
