@@ -1,6 +1,15 @@
 {
   "transactions": [
     {
+      "id": 1779069276733,
+      "type": "expense",
+      "category": "Makanan",
+      "note": "Point coffe",
+      "amount": 51000,
+      "date": "2026-05-17",
+      "fundSource": "Suami Risma"
+    },
+    {
       "id": 1779069135026,
       "type": "expense",
       "category": "Makanan",
